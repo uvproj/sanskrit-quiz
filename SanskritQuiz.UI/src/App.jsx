@@ -7,6 +7,7 @@ import AdminLayout from './screens/admin/AdminLayout';
 import AdminLoginScreen from './screens/admin/AdminLoginScreen';
 import AdminDashboard from './screens/admin/AdminDashboard';
 import AddQuestionScreen from './screens/admin/AddQuestionScreen';
+import MediaManager from './screens/admin/MediaManager';
 import './App.css';
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="add-question" element={<AddQuestionScreen />} />
+          <Route path="media" element={<MediaManager />} />
         </Route>
       </Routes>
     </BrowserRouter>
