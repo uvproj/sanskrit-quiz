@@ -8,6 +8,7 @@ import AdminLoginScreen from './screens/admin/AdminLoginScreen';
 import AdminDashboard from './screens/admin/AdminDashboard';
 import AddQuestionScreen from './screens/admin/AddQuestionScreen';
 import MediaManager from './screens/admin/MediaManager';
+import VocabularyManager from './screens/admin/VocabularyManager';
 import './App.css';
 
 function App() {
@@ -18,12 +19,13 @@ function App() {
         <Route path="/start" element={<StartScreen />} />
         <Route path="/quiz" element={<QuizScreen />} />
         <Route path="/results" element={<ResultsScreen />} />
-        
+
         <Route path="/admin/login" element={<AdminLoginScreen />} />
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="add-question" element={<AddQuestionScreen />} />
           <Route path="media" element={<MediaManager />} />
+          <Route path="vocabulary" element={<VocabularyManager />} />
         </Route>
       </Routes>
     </BrowserRouter>
