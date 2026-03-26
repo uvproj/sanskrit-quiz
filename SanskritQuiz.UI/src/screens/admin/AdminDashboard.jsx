@@ -29,11 +29,6 @@ export default function AdminDashboard() {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
         <h1 style={{ fontSize: '2rem', color: '#0f172a', margin: 0 }}>All Sessions</h1>
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <Link to="vocabulary" style={{ background: '#0ea5e9', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold' }}>Manage Vocabulary</Link>
-          <Link to="media" style={{ background: '#10b981', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold' }}>Manage Media</Link>
-          <Link to="add-question" style={{ background: '#4f46e5', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold' }}>Add New Question</Link>
-        </div>
       </div>
       <div style={{ background: 'white', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>

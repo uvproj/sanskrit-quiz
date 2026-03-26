@@ -18,12 +18,14 @@ export default function AdminLayout() {
     <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'Inter, sans-serif' }}>
       <div style={{ width: '250px', background: '#1e293b', color: 'white', padding: '2rem' }}>
         <h2 style={{ marginBottom: '2rem' }}>Admin Panel</h2>
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <Link to="/admin" style={{ color: '#cbd5e1', textDecoration: 'none' }}>Dashboard (Sessions)</Link>
-          <Link to="add-question" style={{ background: '#4f46e5', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold' }}>Add New Question</Link>
+        <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', height: '100%' }}>
+          <Link to="/admin" className="admin-nav-link">Dashboard (Sessions)</Link>
+          <Link to="vocabulary" className="admin-nav-link">Manage Vocabulary</Link>
+          <Link to="media" className="admin-nav-link">Manage Media</Link>
+          <Link to="add-question" className="admin-nav-link">Add New Question</Link>
           <button
             onClick={handleLogout}
-            style={{ marginTop: 'auto', padding: '0.5rem', background: '#dc2626', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+            className="admin-logout-btn"
           >
             Logout
           </button>
