@@ -34,7 +34,7 @@ namespace SanskritQuiz.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UploadMedia([FromForm] IFormFile file, [FromForm] string tags = "")
+        public async Task<IActionResult> UploadMedia(IFormFile file, [FromForm] string tags = "")
         {
             if (file == null || file.Length == 0)
                 return BadRequest("No file uploaded.");

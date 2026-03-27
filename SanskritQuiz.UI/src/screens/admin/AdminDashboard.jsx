@@ -11,7 +11,7 @@ export default function AdminDashboard() {
 
   const fetchSessions = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/admin/sessions`);
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/sessions`);
       if (res.ok) {
         const data = await res.json();
         setSessions(data);

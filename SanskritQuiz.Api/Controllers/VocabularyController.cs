@@ -17,9 +17,13 @@ namespace SanskritQuiz.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetVocabularies()
+        public async Task<IActionResult> GetVocabularies([FromQuery] string tag = "", [FromQuery] int count = -1)
         {
-            var vocabularies = await _context.Vocabularies.ToListAsync();
+            var vocabularies = await _context.Vocabularies
+                                .Where(v => string.IsNullOrEmpty(tag) || v.Tags.ToLower().Contains(tag.ToLower()))
+                                .ToListAsync();
+            if (count > 0)
+                vocabularies = vocabularies.Take(count).ToList();
             return Ok(vocabularies);
         }
 

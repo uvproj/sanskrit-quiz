@@ -32,5 +32,31 @@ namespace SanskritQuiz.Api.Controllers
 
             return Ok(questions);
         }
+
+        [HttpGet("vocabulary")]
+        public async Task<IActionResult> GetVocabularyQuestions([FromQuery] int count = 10, [FromQuery] string tag = "")
+        {
+            var vocabularies = await _context.Vocabularies
+                .Where(v => string.IsNullOrEmpty(tag) || v.Tags.ToLower().Contains(tag.ToLower()))
+                .Take(count)
+                .ToListAsync();
+
+            if (vocabularies.Count == 0)
+                return NotFound(new { message = "No vocabularies available to generate questions." });
+
+            var questions = vocabularies.Select(v => new Question
+            {
+                Content = v.SanskritWord,
+                Options = new List<Option>
+                {
+                    new Option { Content = v.EnglishWord, IsCorrect = true },
+                    new Option { Content = v.EnglishWord, IsCorrect = false },
+                    new Option { Content = v.EnglishWord, IsCorrect = false },
+                    new Option { Content = v.EnglishWord, IsCorrect = false }
+                }
+            }).ToList();
+
+            return Ok(questions);
+        }
     }
 }

@@ -27,26 +27,6 @@ namespace SanskritQuiz.Api.Controllers
             return Ok(new { token = "fake-jwt-token", message = "Login successful" });
         }
 
-        [HttpGet("sessions")]
-        public async Task<IActionResult> GetSessions()
-        {
-            var sessions = await _context.Sessions
-                .OrderByDescending(s => s.DateAndTime)
-                .ToListAsync();
-            return Ok(sessions);
-        }
-
-        [HttpGet("sessions/{sessionId}/performances")]
-        public async Task<IActionResult> GetPerformances(string sessionId)
-        {
-            var performances = await _context.UserPerformances
-                .Include(p => p.Question)
-                .ThenInclude(q => q.Options)
-                .Where(p => p.SessionId == sessionId)
-                .ToListAsync();
-            return Ok(performances);
-        }
-
         [HttpGet("questions")]
         public async Task<IActionResult> GetQuestions()
         {

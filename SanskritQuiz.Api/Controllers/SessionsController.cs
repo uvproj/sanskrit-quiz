@@ -18,6 +18,25 @@ namespace SanskritQuiz.Api.Controllers
             _context = context;
         }
 
+        [HttpGet()]
+        public async Task<IActionResult> GetSessions()
+        {
+            var sessions = await _context.Sessions
+                .OrderByDescending(s => s.DateAndTime)
+                .ToListAsync();
+            return Ok(sessions);
+        }
+
+
+        [HttpGet("{sessionId}")]
+        public async Task<IActionResult> GetSession(string sessionId)
+        {
+            var session = await _context.Sessions.FindAsync(sessionId);
+            if (session == null) return NotFound("Session not found.");
+            return Ok(session);
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> CreateSession([FromBody] CreateSessionDto dto)
         {
@@ -64,6 +83,18 @@ namespace SanskritQuiz.Api.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
+
+        [HttpGet("{sessionId}/performances")]
+        public async Task<IActionResult> GetPerformances(string sessionId)
+        {
+            var performances = await _context.UserPerformances
+                .Include(p => p.Question)
+                .ThenInclude(q => q.Options)
+                .Where(p => p.SessionId == sessionId)
+                .ToListAsync();
+            return Ok(performances);
+        }
+
     }
 
     public class CreateSessionDto
