@@ -36,7 +36,7 @@ export default function ResultsScreen() {
           selectedOpt: p.question?.options?.find(o => o.id === p.selectedOptionId)
         }));
         setAnswers(mappedAns);
-        setSessionData({ name: 'Admin (Viewing past session)', mode: 'end' });
+        setSessionData({ name: 'Admin (Viewing past session)', reviewMode: 'end' });
       } else {
         navigate('/admin');
       }
@@ -133,7 +133,7 @@ export default function ResultsScreen() {
         </div>
 
         {/* Detailed Answers */}
-        {(sessionData.mode === 'end' || sessionData.mode === 'immediate') && (
+        {(sessionData.reviewMode === 'end' || sessionData.reviewMode === 'immediate') && (
           <div className="bg-white rounded-3xl shadow-xl p-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">Detailed Review</h2>
             <div className="space-y-6">

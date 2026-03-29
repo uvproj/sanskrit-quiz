@@ -18,7 +18,7 @@ namespace SanskritQuiz.Api.Data
         public DbSet<AdminUser> AdminUsers { get; set; }
         public DbSet<Question> Questions { get; set; }
         public DbSet<Option> Options { get; set; }
-        public DbSet<Session> Sessions { get; set; }
+        public DbSet<QuizSession> Sessions { get; set; }
         public DbSet<UserPerformance> UserPerformances { get; set; }
         public DbSet<MediaFile> MediaFiles { get; set; }
         public DbSet<Vocabulary> Vocabularies { get; set; }

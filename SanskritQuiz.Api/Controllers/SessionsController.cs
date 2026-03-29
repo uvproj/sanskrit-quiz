@@ -40,11 +40,12 @@ namespace SanskritQuiz.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateSession([FromBody] CreateSessionDto dto)
         {
-            var session = new Session
+            var session = new QuizSession
             {
                 Id = $"{dto.UserName.Replace(" ", "")}_{DateTime.UtcNow:yyyyMMddHHmmss}",
                 UserName = dto.UserName,
-                Mode = dto.Mode,
+                ReviewMode = dto.ReviewMode,
+                QuizType = dto.QuizType,
                 DateAndTime = DateTime.UtcNow,
                 NumberOfQuestions = dto.NumberOfQuestions
             };
@@ -89,7 +90,7 @@ namespace SanskritQuiz.Api.Controllers
         {
             var performances = await _context.UserPerformances
                 .Include(p => p.Question)
-                .ThenInclude(q => q.Options)
+                .ThenInclude(q => q!.Options)
                 .Where(p => p.SessionId == sessionId)
                 .ToListAsync();
             return Ok(performances);
@@ -100,7 +101,8 @@ namespace SanskritQuiz.Api.Controllers
     public class CreateSessionDto
     {
         public string UserName { get; set; } = string.Empty;
-        public string Mode { get; set; } = string.Empty;
+        public string ReviewMode { get; set; } = string.Empty;
+        public string QuizType { get; set; } = string.Empty;
         public int NumberOfQuestions { get; set; }
     }
 

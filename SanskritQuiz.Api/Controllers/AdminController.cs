@@ -26,21 +26,6 @@ namespace SanskritQuiz.Api.Controllers
 
             return Ok(new { token = "fake-jwt-token", message = "Login successful" });
         }
-
-        [HttpGet("questions")]
-        public async Task<IActionResult> GetQuestions()
-        {
-            var questions = await _context.Questions.Include(q => q.Options).ToListAsync();
-            return Ok(questions);
-        }
-
-        [HttpPost("questions")]
-        public async Task<IActionResult> AddQuestion([FromBody] Question question)
-        {
-            _context.Questions.Add(question);
-            await _context.SaveChangesAsync();
-            return Ok(question);
-        }
     }
 
     public class LoginDto

@@ -11,7 +11,7 @@ namespace SanskritQuiz.Api.Models
         public bool IsCorrect { get; set; }
         public bool IsUnanswered { get; set; }
 
-        public Session? Session { get; set; }
+        public QuizSession? Session { get; set; }
         public Question? Question { get; set; }
     }
 }

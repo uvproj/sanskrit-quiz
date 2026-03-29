@@ -5,7 +5,7 @@ export default function AddQuestionScreen() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
   const [content, setContent] = useState('');
   const [options, setOptions] = useState([
     { content: '', isCorrect: true },
@@ -35,9 +35,9 @@ export default function AddQuestionScreen() {
 
     setLoading(true);
     setError('');
-    
+
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/admin/questions`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/question`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -68,7 +68,7 @@ export default function AddQuestionScreen() {
   return (
     <div style={{ maxWidth: '600px', margin: '0 auto', padding: '2rem', background: 'white', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
       <h2 style={{ fontSize: '1.75rem', marginBottom: '1.5rem', color: '#1e293b' }}>Add New Question</h2>
-      
+
       {error && (
         <div style={{ padding: '1rem', background: '#fef2f2', color: '#b91c1c', borderRadius: '8px', marginBottom: '1.5rem' }}>
           {error}

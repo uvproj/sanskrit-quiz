@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 export default function StartScreen() {
   const navigate = useNavigate();
   const [name, setName] = useState('');
-  const [mode, setMode] = useState('immediate');
+  const [reviewMode, setReviewMode] = useState('immediate');
+  const [quizType, setQuizType] = useState('vocabulary');
   const [questionsCount, setQuestionsCount] = useState(10);
   const [loading, setLoading] = useState(false);
 
@@ -19,18 +20,19 @@ export default function StartScreen() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           UserName: name,
-          Mode: mode,
+          ReviewMode: reviewMode,
+          QuizType: quizType,
           NumberOfQuestions: Number(questionsCount)
         })
       });
 
       if (response.ok) {
         const data = await response.json();
-        // Store session configuration in localStorage/state
         localStorage.setItem('quizSession', JSON.stringify({
           sessionId: data.sessionId,
           name,
-          mode,
+          reviewMode,
+          quizType,
           questionsCount: Number(questionsCount)
         }));
         navigate('/quiz');
@@ -63,12 +65,24 @@ export default function StartScreen() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Review Mode</label>
             <select
-              value={mode}
-              onChange={e => setMode(e.target.value)}
+              value={reviewMode}
+              onChange={e => setReviewMode(e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-white"
             >
               <option value="immediate">Review Answers Immediately</option>
               <option value="end">Review Answers at the End</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Quiz Type</label>
+            <select
+              value={quizType}
+              onChange={e => setQuizType(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-white"
+            >
+              <option value="">--All--</option>
+              <option value="vocabulary">Vocabulary Words</option>
             </select>
           </div>
 
