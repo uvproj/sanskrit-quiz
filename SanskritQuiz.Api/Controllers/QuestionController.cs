@@ -20,17 +20,31 @@ namespace SanskritQuiz.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetQuestions([FromQuery] int count = 10)
+        public async Task<IActionResult> GetQuestions([FromQuery] int? count = null)
         {
-            var questions = await _context.Questions
-                .Include(q => q.Options)
-                .Take(count)
-                .ToListAsync();
+            var query = _context.Questions.Include(q => q.Options).AsQueryable();
+            if (count.HasValue)
+                query = query.Take(count.Value);
 
-            if (!questions.Any())
-                return NotFound(new { message = "No questions available." });
-
+            var questions = await query.ToListAsync();
             return Ok(questions);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateQuestion(int id, [FromBody] Question updated)
+        {
+            var question = await _context.Questions.Include(q => q.Options).FirstOrDefaultAsync(q => q.Id == id);
+            if (question == null) return NotFound();
+
+            question.Content = updated.Content;
+            question.Type = updated.Type;
+
+            // Replace options
+            _context.Options.RemoveRange(question.Options);
+            question.Options = updated.Options;
+
+            await _context.SaveChangesAsync();
+            return Ok(question);
         }
 
         [HttpGet("vocabulary")]

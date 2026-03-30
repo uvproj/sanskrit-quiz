@@ -1,65 +1,77 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
+const cards = [
+  {
+    title: 'Questions',
+    description: 'Browse, add, and edit quiz questions.',
+    icon: '❓',
+    path: '/admin/questions',
+    accent: '#4f46e5',
+    bg: '#ede9fe',
+  },
+  {
+    title: 'Quiz Sessions',
+    description: 'View all learner quiz sessions and scores.',
+    icon: '📊',
+    path: '/admin/sessions',
+    accent: '#0891b2',
+    bg: '#e0f2fe',
+  },
+  {
+    title: 'Vocabulary',
+    description: 'Manage the Sanskrit vocabulary database.',
+    icon: '📖',
+    path: '/admin/vocabulary',
+    accent: '#059669',
+    bg: '#d1fae5',
+  },
+  {
+    title: 'Media',
+    description: 'Upload and manage media assets.',
+    icon: '🖼️',
+    path: '/admin/media',
+    accent: '#d97706',
+    bg: '#fef3c7',
+  },
+];
 
 export default function AdminDashboard() {
-  const [sessions, setSessions] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchSessions();
-  }, []);
-
-  const fetchSessions = async () => {
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/sessions`);
-      if (res.ok) {
-        const data = await res.json();
-        setSessions(data);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) return <div>Loading sessions...</div>;
+  const navigate = useNavigate();
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <h1 style={{ fontSize: '2rem', color: '#0f172a', margin: 0 }}>All Sessions</h1>
-      </div>
-      <div style={{ background: 'white', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-          <thead>
-            <tr style={{ background: '#f1f5f9', borderBottom: '1px solid #e2e8f0' }}>
-              <th style={{ padding: '1rem', color: '#475569' }}>User</th>
-              <th style={{ padding: '1rem', color: '#475569' }}>Date</th>
-              <th style={{ padding: '1rem', color: '#475569' }}>Questions</th>
-              <th style={{ padding: '1rem', color: '#475569' }}>Score</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sessions.map(s => (
-              <tr key={s.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                <td style={{ padding: '1rem' }}>{s.userName}</td>
-                <td style={{ padding: '1rem' }}>
-                  <Link to={`/results?admin=true&sessionId=${s.id}`} style={{ color: '#4f46e5', textDecoration: 'underline' }}>
-                    {new Date(s.dateAndTime).toLocaleString()}
-                  </Link>
-                </td>
-                <td style={{ padding: '1rem' }}>{s.numberOfQuestions}</td>
-                <td style={{ padding: '1rem', fontWeight: 'bold' }}>{s.score}</td>
-              </tr>
-            ))}
-            {sessions.length === 0 && (
-              <tr>
-                <td colSpan="4" style={{ padding: '1rem', textAlign: 'center', color: '#94a3b8' }}>No sessions found.</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+    <div style={{ fontFamily: 'Inter, sans-serif' }}>
+      <h1 style={{ fontSize: '1.75rem', color: '#0f172a', marginBottom: '0.5rem' }}>Admin Dashboard</h1>
+      <p style={{ color: '#64748b', marginBottom: '2rem' }}>Select a section to manage.</p>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1.25rem' }}>
+        {cards.map((card) => (
+          <button
+            key={card.path}
+            onClick={() => navigate(card.path)}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+              padding: '1.5rem',
+              background: 'white',
+              border: `2px solid ${card.bg}`,
+              borderRadius: '12px',
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+              textAlign: 'left',
+              transition: 'box-shadow 0.15s',
+              fontFamily: 'inherit',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.boxShadow = `0 4px 16px rgba(0,0,0,0.12)`)}
+            onMouseLeave={(e) => (e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)')}
+          >
+            <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>{card.icon}</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: 700, color: card.accent, marginBottom: '0.4rem' }}>
+              {card.title}
+            </div>
+            <div style={{ fontSize: '0.875rem', color: '#64748b', lineHeight: 1.5 }}>{card.description}</div>
+          </button>
+        ))}
       </div>
     </div>
   );

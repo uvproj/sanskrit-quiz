@@ -6,7 +6,8 @@ import ResultsScreen from './screens/ResultsScreen';
 import AdminLayout from './screens/admin/AdminLayout';
 import AdminLoginScreen from './screens/admin/AdminLoginScreen';
 import AdminDashboard from './screens/admin/AdminDashboard';
-import AddQuestionScreen from './screens/admin/AddQuestionScreen';
+import QuestionManager from './screens/admin/QuestionManager';
+import SessionsScreen from './screens/admin/SessionsScreen';
 import MediaManager from './screens/admin/MediaManager';
 import VocabularyManager from './screens/admin/VocabularyManager';
 import './App.css';
@@ -23,7 +24,8 @@ function App() {
         <Route path="/admin/login" element={<AdminLoginScreen />} />
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
-          <Route path="add-question" element={<AddQuestionScreen />} />
+          <Route path="questions" element={<QuestionManager />} />
+          <Route path="sessions" element={<SessionsScreen />} />
           <Route path="media" element={<MediaManager />} />
           <Route path="vocabulary" element={<VocabularyManager />} />
         </Route>
