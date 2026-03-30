@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import MediaHelper from '../../helpers/MediaHelper';
 
 const API = import.meta.env.VITE_API_BASE_URL;
 
@@ -12,12 +13,23 @@ const EMPTY_OPTIONS = [
 function QuestionForm({ initial, onSave, onCancel, saving }) {
   const [content, setContent] = useState(initial?.content ?? '');
   const [type, setType] = useState(initial?.type ?? 'Word');
+  const [mediaUrl, setMediaUrl] = useState(initial?.mediaUrl ?? '');
+  const [file, setFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState('');
   const [options, setOptions] = useState(
     initial?.options?.length
-      ? initial.options.map((o) => ({ content: o.content, isCorrect: o.isCorrect }))
-      : EMPTY_OPTIONS.map((o) => ({ ...o }))
+      ? initial.options.map((o) => ({ content: o.content, isCorrect: o.isCorrect, type: o.type ?? 'Word', mediaUrl: o.mediaUrl ?? '' }))
+      : EMPTY_OPTIONS.map((o) => ({ ...o, type: 'Word', mediaUrl: '' }))
   );
   const [error, setError] = useState('');
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      setPreviewUrl(URL.createObjectURL(selectedFile));
+    }
+  };
 
   const handleOptionChange = (i, value) => {
     const next = [...options];
@@ -25,16 +37,72 @@ function QuestionForm({ initial, onSave, onCancel, saving }) {
     setOptions(next);
   };
 
+  const handleOptionTypeChange = (i, newType) => {
+    const next = [...options];
+    next[i] = { ...next[i], type: newType };
+    setOptions(next);
+  };
+
+  const handleOptionFileChange = (i, e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      const next = [...options];
+      next[i] = { ...next[i], file: selectedFile, previewUrl: URL.createObjectURL(selectedFile) };
+      setOptions(next);
+    }
+  };
+
   const handleCorrectChange = (i) => {
     setOptions(options.map((o, idx) => ({ ...o, isCorrect: idx === i })));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!content.trim()) return setError('Question content is required.');
-    if (options.some((o) => !o.content.trim())) return setError('All choices must be filled.');
+    if (type === 'Word' && !content.trim()) return setError('Question content is required.');
+    if (type === 'Picture' && !file && !mediaUrl) return setError('An image is required for Picture type.');
+    if (options.some((o) => o.type === 'Word' && !o.content.trim())) return setError('All choices must be filled.');
+    if (options.some((o) => o.type === 'Picture' && !o.file && !o.mediaUrl)) return setError('An image is required for all Picture type options.');
     setError('');
-    onSave({ content, type, options });
+
+    let finalMediaUrl = mediaUrl;
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file);
+      try {
+        const res = await fetch(`${API}/api/media`, { method: 'POST', body: formData });
+        if (res.ok) {
+          const data = await res.json();
+          finalMediaUrl = `media://${data.id}`;
+        } else {
+          return setError('Failed to upload question image.');
+        }
+      } catch (err) {
+        return setError('Error uploading question image: ' + err.message);
+      }
+    }
+
+    const finalOptions = [];
+    for (const opt of options) {
+      let optMediaUrl = opt.mediaUrl;
+      if (opt.file) {
+        const formData = new FormData();
+        formData.append('file', opt.file);
+        try {
+          const res = await fetch(`${API}/api/media`, { method: 'POST', body: formData });
+          if (res.ok) {
+            const data = await res.json();
+            optMediaUrl = `media://${data.id}`;
+          } else {
+            return setError('Failed to upload option image.');
+          }
+        } catch (err) {
+          return setError('Error uploading option image: ' + err.message);
+        }
+      }
+      finalOptions.push({ content: opt.content, isCorrect: opt.isCorrect, type: opt.type, mediaUrl: optMediaUrl });
+    }
+
+    onSave({ content, type, mediaUrl: finalMediaUrl, options: finalOptions });
   };
 
   return (
@@ -45,14 +113,14 @@ function QuestionForm({ initial, onSave, onCancel, saving }) {
         </div>
       )}
 
-      <div style={{ display: 'flex', gap: '1rem' }}>
+      <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
         <div style={{ flex: 1 }}>
-          <label style={labelStyle}>Question Text</label>
+          <label style={labelStyle}>{type === 'Picture' ? 'Question Text (Optional)' : 'Question Text'}</label>
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            rows={3}
-            required
+            rows={2}
+            required={type === 'Word'}
             placeholder="Enter the question text..."
             style={inputStyle}
           />
@@ -66,25 +134,72 @@ function QuestionForm({ initial, onSave, onCancel, saving }) {
         </div>
       </div>
 
+      {type === 'Picture' && (
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', background: '#f8fafc', padding: '1rem', borderRadius: '8px', border: '1px dashed #cbd5e1' }}>
+          <div style={{ flex: 1 }}>
+            <label style={labelStyle}>Question Image</label>
+            <input type="file" accept="image/*" onChange={handleFileChange} style={{ fontSize: '0.875rem' }} />
+          </div>
+          {(previewUrl || mediaUrl) && (
+            <div style={{ position: 'relative' }}>
+              <img
+                src={previewUrl || MediaHelper.resolveMedia(mediaUrl)}
+                alt="Preview"
+                style={{ height: '80px', width: '80px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #e2e8f0' }}
+              />
+              <div style={{ position: 'absolute', top: -8, right: -8, background: '#4f46e5', color: 'white', fontSize: '10px', padding: '2px 6px', borderRadius: '10px' }}>
+                Preview
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       <div>
         <label style={labelStyle}>Choices (pick the correct one)</label>
         {options.map((opt, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.6rem' }}>
-            <input
-              type="radio"
-              name={`correct-${initial?.id ?? 'new'}`}
-              checked={opt.isCorrect}
-              onChange={() => handleCorrectChange(i)}
-              style={{ cursor: 'pointer', transform: 'scale(1.2)' }}
-            />
-            <input
-              type="text"
-              value={opt.content}
-              onChange={(e) => handleOptionChange(i, e.target.value)}
-              required
-              placeholder={`Choice ${i + 1}`}
-              style={{ ...inputStyle, marginBottom: 0 }}
-            />
+          <div key={i} style={{ marginBottom: '1rem', padding: '0.75rem', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <input
+                type="radio"
+                name={`correct-${initial?.id ?? 'new'}`}
+                checked={opt.isCorrect}
+                onChange={() => handleCorrectChange(i)}
+                style={{ cursor: 'pointer', transform: 'scale(1.2)' }}
+              />
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                  <input
+                    type="text"
+                    value={opt.content}
+                    onChange={(e) => handleOptionChange(i, e.target.value)}
+                    required={opt.type === 'Word'}
+                    placeholder={`Choice ${i + 1} text...`}
+                    style={{ ...inputStyle, marginBottom: 0, flex: 1 }}
+                  />
+                  <select
+                    value={opt.type}
+                    onChange={(e) => handleOptionTypeChange(i, e.target.value)}
+                    style={{ ...inputStyle, width: '100px', marginBottom: 0 }}
+                  >
+                    <option value="Word">Word</option>
+                    <option value="Picture">Picture</option>
+                  </select>
+                </div>
+                {opt.type === 'Picture' && (
+                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                    <input type="file" accept="image/*" onChange={(e) => handleOptionFileChange(i, e)} style={{ fontSize: '0.75rem' }} />
+                    {(opt.previewUrl || opt.mediaUrl) && (
+                      <img
+                        src={opt.previewUrl || MediaHelper.resolveMedia(opt.mediaUrl)}
+                        alt="Preview"
+                        style={{ height: '40px', width: '40px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #e2e8f0' }}
+                      />
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         ))}
       </div>
@@ -136,7 +251,8 @@ export default function QuestionManager() {
         body: JSON.stringify({
           Type: formData.type,
           Content: formData.content,
-          Options: formData.options.map((o) => ({ Content: o.content, IsCorrect: o.isCorrect })),
+          MediaUrl: formData.mediaUrl,
+          Options: formData.options.map((o) => ({ Content: o.content, IsCorrect: o.isCorrect, Type: o.type, MediaUrl: o.mediaUrl })),
         }),
       });
       if (res.ok) {
@@ -159,7 +275,8 @@ export default function QuestionManager() {
           Id: id,
           Type: formData.type,
           Content: formData.content,
-          Options: formData.options.map((o) => ({ Content: o.content, IsCorrect: o.isCorrect })),
+          MediaUrl: formData.mediaUrl,
+          Options: formData.options.map((o) => ({ Content: o.content, IsCorrect: o.isCorrect, Type: o.type, MediaUrl: o.mediaUrl })),
         }),
       });
       if (res.ok) {

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import MediaHelper from '../helpers/MediaHelper';
 
 export default function ResultsScreen() {
   const navigate = useNavigate();
@@ -46,6 +47,7 @@ export default function ResultsScreen() {
       setSaving(false);
     }
   };
+
 
   const loadLocalResults = () => {
     const sessionStr = localStorage.getItem('quizSession');
@@ -142,10 +144,17 @@ export default function ResultsScreen() {
                 return (
                   <div key={i} className={`p-6 rounded-2xl border-2 ${ans.isCorrect ? 'border-green-100 bg-green-50' : ans.isUnanswered ? 'border-gray-200 bg-gray-50' : 'border-red-100 bg-red-50'}`}>
                     <div className="flex justify-between items-start mb-4">
-                      <h3 className="font-semibold text-gray-800">Q{i + 1}: {ans.question.content}</h3>
-                      {ans.isCorrect && <span className="px-3 py-1 bg-green-200 text-green-800 rounded-full text-xs font-bold uppercase tracking-wider">Correct</span>}
-                      {!ans.isCorrect && !ans.isUnanswered && <span className="px-3 py-1 bg-red-200 text-red-800 rounded-full text-xs font-bold uppercase tracking-wider">Incorrect</span>}
-                      {ans.isUnanswered && <span className="px-3 py-1 bg-gray-200 text-gray-800 rounded-full text-xs font-bold uppercase tracking-wider">Unanswered</span>}
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-800">Q{i + 1}: {ans.question.content}</h3>
+                        {ans.question.type === 'Picture' && (
+                          <img src={MediaHelper.resolveMedia(ans.question.mediaUrl)} alt="Question" className="mt-2 max-h-32 object-contain rounded-lg border border-gray-200 bg-white" />
+                        )}
+                      </div>
+                      <div className="flex flex-col items-end gap-2">
+                        {ans.isCorrect && <span className="px-3 py-1 bg-green-200 text-green-800 rounded-full text-xs font-bold uppercase tracking-wider">Correct</span>}
+                        {!ans.isCorrect && !ans.isUnanswered && <span className="px-3 py-1 bg-red-200 text-red-800 rounded-full text-xs font-bold uppercase tracking-wider">Incorrect</span>}
+                        {ans.isUnanswered && <span className="px-3 py-1 bg-gray-200 text-gray-800 rounded-full text-xs font-bold uppercase tracking-wider">Unanswered</span>}
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -154,12 +163,24 @@ export default function ResultsScreen() {
                         {ans.isUnanswered ? (
                           <span className="text-gray-400 italic">None selected</span>
                         ) : (
-                          <span className={`font-medium ${ans.isCorrect ? 'text-green-700' : 'text-red-700'}`}>{ans.selectedOpt?.content || '(Picture)'}</span>
+                          <div className={`font-medium ${ans.isCorrect ? 'text-green-700' : 'text-red-700'}`}>
+                            {ans.selectedOpt?.type === 'Picture' ? (
+                              <img src={MediaHelper.resolveMedia(ans.selectedOpt.mediaUrl)} alt="Your Answer" className="mt-1 h-12 object-contain rounded border border-gray-200" />
+                            ) : (
+                              ans.selectedOpt?.content || '(Picture)'
+                            )}
+                          </div>
                         )}
                       </div>
                       <div>
                         <span className="text-gray-500 block mb-1">Correct Answer:</span>
-                        <span className="font-medium text-green-700">{correctOpt?.content || '(Picture)'}</span>
+                        <div className="font-medium text-green-700">
+                          {correctOpt?.type === 'Picture' ? (
+                            <img src={resolveMedia(correctOpt.mediaUrl)} alt="Correct Answer" className="mt-1 h-12 object-contain rounded border border-gray-200" />
+                          ) : (
+                            correctOpt?.content || '(Picture)'
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>

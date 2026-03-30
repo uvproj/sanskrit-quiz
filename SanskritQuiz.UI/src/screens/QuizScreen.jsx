@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import MediaHelper from '../helpers/MediaHelper';
 
 export default function QuizScreen() {
   const navigate = useNavigate();
@@ -39,6 +40,7 @@ export default function QuizScreen() {
       console.error('Error fetching questions:', error);
     }
   };
+
 
   const currentQuestion = questions[currentIndex];
 
@@ -147,7 +149,7 @@ export default function QuizScreen() {
         {/* Question Area */}
         <div className="flex-1 p-8 flex flex-col items-center justify-center text-center">
           {currentQuestion.type === 'Picture' ? (
-            <img src={currentQuestion.mediaUrl} alt="Question" className="max-h-64 object-contain mb-6 rounded-lg shadow-md" />
+            <img src={MediaHelper.resolveMedia(currentQuestion.mediaUrl)} alt="Question" className="max-h-64 object-contain mb-6 rounded-lg shadow-md" />
           ) : null}
           {currentQuestion.content && (
             <h2 className="text-4xl font-bold text-gray-800 mb-8">{currentQuestion.content}</h2>
@@ -179,7 +181,7 @@ export default function QuizScreen() {
                 >
                   <span className="absolute left-4 top-4 text-xs font-bold text-gray-400 bg-gray-100 rounded-full w-6 h-6 flex items-center justify-center">{idx + 1}</span>
                   {opt.type === 'Picture' ? (
-                    <img src={opt.mediaUrl} alt={`Option ${idx + 1} `} className="max-h-24 object-contain" />
+                    <img src={MediaHelper.resolveMedia(opt.mediaUrl)} alt={`Option ${idx + 1} `} className="max-h-24 object-contain" />
                   ) : (
                     <span className="text-xl font-medium text-gray-700">{opt.content}</span>
                   )}
