@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MediaHelper from '../helpers/MediaHelper';
+import './QuizStyles.css';
 
 export default function QuizScreen() {
   const navigate = useNavigate();
@@ -132,43 +133,47 @@ export default function QuizScreen() {
     }
   }, [answers, questions.length, isFeedbackMode, navigate]);
 
-  if (!currentQuestion) return <div className="min-h-screen flex items-center justify-center p-4"><div className="animate-spin rounded-full h-12 w-12 border-4 border-indigo-500 border-t-transparent"></div></div>;
+  if (!currentQuestion) return (
+    <div className="quiz-container">
+      <div className="animate-spin rounded-full h-12 w-12 border-4 border-indigo-500 border-t-transparent"></div>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-3xl bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col h-[80vh] min-h-[600px]">
+    <div className="quiz-container bg-light-gray">
+      <div className="card quiz-card-full">
         {/* Header */}
-        <div className="bg-indigo-600 p-6 flex justify-between items-center text-white">
-          <div className="font-semibold text-lg">Question {currentIndex + 1} of {questions.length}</div>
-          <div className="flex items-center space-x-2">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            <span className={`text - 2xl font - mono ${timeLeft <= 5 ? 'text-red-300 animate-pulse' : ''} `}>00:{timeLeft.toString().padStart(2, '0')}</span>
+        <header className="quiz-header quiz-header-compact">
+          <div>Question {currentIndex + 1} of {questions.length}</div>
+          <div className="quiz-timer">
+            <svg style={{ width: '24px', height: '24px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span className={timeLeft <= 5 ? 'timer-pulse' : ''}>00:{timeLeft.toString().padStart(2, '0')}</span>
           </div>
-        </div>
+        </header>
 
         {/* Question Area */}
-        <div className="flex-1 p-8 flex flex-col items-center justify-center text-center">
+        <div className="question-area">
           {currentQuestion.type === 'Picture' ? (
-            <img src={MediaHelper.resolveMedia(currentQuestion.mediaUrl)} alt="Question" className="max-h-64 object-contain mb-6 rounded-lg shadow-md" />
+            <img src={MediaHelper.resolveMedia(currentQuestion.mediaUrl)} alt="Question" className="question-image" />
           ) : null}
           {currentQuestion.content && (
-            <h2 className="text-4xl font-bold text-gray-800 mb-8">{currentQuestion.content}</h2>
+            <h2 className="text-4xl-bold">{currentQuestion.content}</h2>
           )}
         </div>
 
         {/* Options Grid */}
-        <div className="p-6 bg-gray-50 border-t border-gray-100">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="options-container">
+          <div className="options-grid">
             {currentQuestion.options.map((opt, idx) => {
-              let btnClass = "relative overflow-hidden group flex items-center justify-center p-6 bg-white border-2 border-gray-200 rounded-2xl hover:border-indigo-500 hover:shadow-md transition-all text-left w-full h-full min-h-[80px]";
+              let btnStateClass = "";
 
               if (isFeedbackMode) {
                 if (opt.isCorrect) {
-                  btnClass = "relative overflow-hidden group flex items-center justify-center p-6 bg-green-50 border-2 border-green-500 rounded-2xl text-left w-full h-full min-h-[80px]";
+                  btnStateClass = "correct";
                 } else if (selectedOption?.id === opt.id) {
-                  btnClass = "relative overflow-hidden group flex items-center justify-center p-6 bg-red-50 border-2 border-red-500 rounded-2xl text-left w-full h-full min-h-[80px]";
+                  btnStateClass = "wrong";
                 } else {
-                  btnClass = "relative overflow-hidden group flex items-center justify-center p-6 bg-gray-50 border-2 border-gray-200 rounded-2xl text-left w-full h-full min-h-[80px] opacity-60";
+                  btnStateClass = "muted";
                 }
               }
 
@@ -177,13 +182,13 @@ export default function QuizScreen() {
                   key={opt.id}
                   onClick={() => !isFeedbackMode && handleNextQuestion(opt)}
                   disabled={isFeedbackMode}
-                  className={btnClass}
+                  className={`option-btn ${btnStateClass}`}
                 >
-                  <span className="absolute left-4 top-4 text-xs font-bold text-gray-400 bg-gray-100 rounded-full w-6 h-6 flex items-center justify-center">{idx + 1}</span>
+                  <span className="option-number">{idx + 1}</span>
                   {opt.type === 'Picture' ? (
-                    <img src={MediaHelper.resolveMedia(opt.mediaUrl)} alt={`Option ${idx + 1} `} className="max-h-24 object-contain" />
+                    <img src={MediaHelper.resolveMedia(opt.mediaUrl)} alt={`Option ${idx + 1}`} className="option-image" />
                   ) : (
-                    <span className="text-xl font-medium text-gray-700">{opt.content}</span>
+                    <span className="option-content">{opt.content}</span>
                   )}
                 </button>
               );

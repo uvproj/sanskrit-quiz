@@ -96,6 +96,33 @@ namespace SanskritQuiz.Api.Controllers
             return Ok(performances);
         }
 
+        [HttpDelete("bulk")]
+        public async Task<IActionResult> BulkDeleteSessions([FromBody] System.Collections.Generic.List<string> ids)
+        {
+            if (ids == null || ids.Count == 0) return BadRequest("No IDs provided.");
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                // Delete related performances first
+                var performances = _context.UserPerformances.Where(p => ids.Contains(p.SessionId));
+                _context.UserPerformances.RemoveRange(performances);
+
+                // Delete sessions
+                var sessions = _context.Sessions.Where(s => ids.Contains(s.Id));
+                _context.Sessions.RemoveRange(sessions);
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return Ok(new { message = $"{ids.Count} sessions deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, $"Error during bulk delete: {ex.Message}");
+            }
+        }
     }
 
     public class CreateSessionDto

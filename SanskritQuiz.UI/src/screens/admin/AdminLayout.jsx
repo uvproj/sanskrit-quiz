@@ -1,5 +1,5 @@
-import { Navigate, Outlet, Link, useNavigate } from 'react-router-dom';
-import './AdminAuth.css';
+import { Navigate, Outlet, NavLink, useNavigate } from 'react-router-dom';
+import './AdminCommon.css';
 
 export default function AdminLayout() {
   const navigate = useNavigate();
@@ -15,24 +15,24 @@ export default function AdminLayout() {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'Inter, sans-serif' }}>
+    <div className="admin-layout">
       {/* Sidebar */}
-      <div style={{ width: '220px', background: '#1e293b', color: 'white', padding: '1.75rem 1.25rem', display: 'flex', flexDirection: 'column' }}>
-        <h2 style={{ marginBottom: '2rem', fontSize: '1.1rem', letterSpacing: '0.05em', color: '#94a3b8', textTransform: 'uppercase' }}>Admin Panel</h2>
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', flex: 1 }}>
-          <Link to="/admin" className="admin-nav-link">🏠 Dashboard</Link>
-          <Link to="questions" className="admin-nav-link">❓ Questions</Link>
-          <Link to="sessions" className="admin-nav-link">📊 Sessions</Link>
-          <Link to="vocabulary" className="admin-nav-link">📖 Vocabulary</Link>
-          <Link to="media" className="admin-nav-link">🖼️ Media</Link>
+      <aside className="admin-sidebar">
+        <h2 className="admin-sidebar-title">Sanskrit Quiz</h2>
+        <nav className="admin-sidebar-nav">
+          <NavLink to="/admin" end className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}>🏠 Dashboard</NavLink>
+          <NavLink to="questions" className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}>❓ Questions</NavLink>
+          <NavLink to="sessions" className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}>📊 Sessions</NavLink>
+          <NavLink to="vocabulary" className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}>📖 Vocabulary</NavLink>
+          <NavLink to="media" className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}>🖼️ Media</NavLink>
         </nav>
         <button onClick={handleLogout} className="admin-logout-btn">Logout</button>
-      </div>
+      </aside>
 
       {/* Content */}
-      <div style={{ flex: 1, background: '#f8fafc', padding: '2rem', overflowY: 'auto' }}>
+      <main className="admin-main-content">
         <Outlet />
-      </div>
+      </main>
     </div>
   );
 }

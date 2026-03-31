@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import MediaHelper from '../helpers/MediaHelper';
+import './QuizStyles.css';
 
 export default function ResultsScreen() {
   const navigate = useNavigate();
@@ -98,7 +99,11 @@ export default function ResultsScreen() {
     }
   };
 
-  if (saving) return <div className="min-h-screen flex text-xl font-medium items-center justify-center">Saving Results...</div>;
+  if (saving) return (
+    <div className="quiz-container">
+      <div className="text-3xl-bold">Saving Results...</div>
+    </div>
+  );
 
   const correctCount = answers.filter(a => a.isCorrect).length;
   const unansweredCount = answers.filter(a => a.isUnanswered).length;
@@ -106,66 +111,68 @@ export default function ResultsScreen() {
   const score = correctCount * 10;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center p-4 py-12">
-      <div className="w-full max-w-4xl space-y-8">
-
+    <div className="quiz-container bg-light-gray" style={{ justifyContent: 'flex-start', padding: '3rem 1rem' }}>
+      <div className="w-full" style={{ maxWidth: '44rem' }}>
+        
         {/* Summary Card */}
-        <div className="bg-white rounded-3xl shadow-xl overflow-hidden p-8 text-center animate-fade-in">
-          <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 mb-2">Quiz Complete!</h1>
-          <p className="text-gray-500 mb-8">Excellent effort, {sessionData?.name}</p>
+        <div className="card results-summary-card animate-fade-in">
+          <div>
+            <h1 className="text-4xl-bold text-gradient">Quiz Complete!</h1>
+            <p className="text-muted">Excellent effort, {sessionData?.name}</p>
+          </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="p-6 bg-indigo-50 rounded-2xl">
-              <div className="text-sm font-medium text-indigo-500 mb-1">Total Score</div>
-              <div className="text-3xl font-bold text-indigo-700">{score}</div>
+          <div className="results-grid">
+            <div className="stat-item score">
+              <span className="stat-label">Total Score</span>
+              <span className="stat-value">{score}</span>
             </div>
-            <div className="p-6 bg-green-50 rounded-2xl">
-              <div className="text-sm font-medium text-green-500 mb-1">Correct</div>
-              <div className="text-3xl font-bold text-green-700">{correctCount}</div>
+            <div className="stat-item correct">
+              <span className="stat-label">Correct</span>
+              <span className="stat-value">{correctCount}</span>
             </div>
-            <div className="p-6 bg-red-50 rounded-2xl">
-              <div className="text-sm font-medium text-red-500 mb-1">Incorrect</div>
-              <div className="text-3xl font-bold text-red-700">{incorrectCount}</div>
+            <div className="stat-item incorrect">
+              <span className="stat-label">Incorrect</span>
+              <span className="stat-value">{incorrectCount}</span>
             </div>
-            <div className="p-6 bg-gray-100 rounded-2xl">
-              <div className="text-sm font-medium text-gray-500 mb-1">Unanswered</div>
-              <div className="text-3xl font-bold text-gray-700">{unansweredCount}</div>
+            <div className="stat-item unanswered">
+              <span className="stat-label">Unanswered</span>
+              <span className="stat-value">{unansweredCount}</span>
             </div>
           </div>
         </div>
 
         {/* Detailed Answers */}
         {(sessionData.reviewMode === 'end' || sessionData.reviewMode === 'immediate') && (
-          <div className="bg-white rounded-3xl shadow-xl p-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Detailed Review</h2>
-            <div className="space-y-6">
+          <div className="card results-review-card">
+            <h2 className="text-3xl-bold">Detailed Review</h2>
+            <div className="setup-form">
               {answers.map((ans, i) => {
                 const correctOpt = ans.question.options.find(o => o.isCorrect);
+                const statusClass = ans.isCorrect ? 'correct' : (ans.isUnanswered ? 'unanswered' : 'wrong');
+                
                 return (
-                  <div key={i} className={`p-6 rounded-2xl border-2 ${ans.isCorrect ? 'border-green-100 bg-green-50' : ans.isUnanswered ? 'border-gray-200 bg-gray-50' : 'border-red-100 bg-red-50'}`}>
-                    <div className="flex justify-between items-start mb-4">
+                  <div key={i} className={`review-item ${statusClass}`}>
+                    <div className="review-header">
                       <div className="flex-1">
-                        <h3 className="font-semibold text-gray-800">Q{i + 1}: {ans.question.content}</h3>
+                        <h3 className="review-question">Q{i + 1}: {ans.question.content}</h3>
                         {ans.question.type === 'Picture' && (
-                          <img src={MediaHelper.resolveMedia(ans.question.mediaUrl)} alt="Question" className="mt-2 max-h-32 object-contain rounded-lg border border-gray-200 bg-white" />
+                          <img src={MediaHelper.resolveMedia(ans.question.mediaUrl)} alt="Question" className="question-image" style={{ maxHeight: '100px', marginTop: '0.5rem' }} />
                         )}
                       </div>
-                      <div className="flex flex-col items-end gap-2">
-                        {ans.isCorrect && <span className="px-3 py-1 bg-green-200 text-green-800 rounded-full text-xs font-bold uppercase tracking-wider">Correct</span>}
-                        {!ans.isCorrect && !ans.isUnanswered && <span className="px-3 py-1 bg-red-200 text-red-800 rounded-full text-xs font-bold uppercase tracking-wider">Incorrect</span>}
-                        {ans.isUnanswered && <span className="px-3 py-1 bg-gray-200 text-gray-800 rounded-full text-xs font-bold uppercase tracking-wider">Unanswered</span>}
-                      </div>
+                      <span className={`feedback-badge ${statusClass}`}>
+                        {statusClass}
+                      </span>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div className="review-comparison">
                       <div>
-                        <span className="text-gray-500 block mb-1">Your Answer:</span>
+                        <span className="comparison-label">Your Answer:</span>
                         {ans.isUnanswered ? (
-                          <span className="text-gray-400 italic">None selected</span>
+                          <span className="text-muted" style={{ fontStyle: 'italic' }}>None selected</span>
                         ) : (
-                          <div className={`font-medium ${ans.isCorrect ? 'text-green-700' : 'text-red-700'}`}>
+                          <div className={`comparison-value ${ans.isCorrect ? 'correct' : 'wrong'}`}>
                             {ans.selectedOpt?.type === 'Picture' ? (
-                              <img src={MediaHelper.resolveMedia(ans.selectedOpt.mediaUrl)} alt="Your Answer" className="mt-1 h-12 object-contain rounded border border-gray-200" />
+                              <img src={MediaHelper.resolveMedia(ans.selectedOpt.mediaUrl)} alt="Your Answer" className="option-image" style={{ height: '40px' }} />
                             ) : (
                               ans.selectedOpt?.content || '(Picture)'
                             )}
@@ -173,10 +180,10 @@ export default function ResultsScreen() {
                         )}
                       </div>
                       <div>
-                        <span className="text-gray-500 block mb-1">Correct Answer:</span>
-                        <div className="font-medium text-green-700">
+                        <span className="comparison-label">Correct Answer:</span>
+                        <div className="comparison-value correct">
                           {correctOpt?.type === 'Picture' ? (
-                            <img src={resolveMedia(correctOpt.mediaUrl)} alt="Correct Answer" className="mt-1 h-12 object-contain rounded border border-gray-200" />
+                            <img src={MediaHelper.resolveMedia(correctOpt.mediaUrl)} alt="Correct Answer" className="option-image" style={{ height: '40px' }} />
                           ) : (
                             correctOpt?.content || '(Picture)'
                           )}
@@ -190,10 +197,10 @@ export default function ResultsScreen() {
           </div>
         )}
 
-        <div className="text-center pb-8">
+        <div className="text-center">
           <button
             onClick={() => navigate(isAdminView ? '/admin' : '/')}
-            className="px-8 py-4 bg-gray-800 hover:bg-gray-900 text-white rounded-xl font-bold text-lg transition-transform transform hover:scale-105 shadow-xl"
+            className="btn-finish"
           >
             {isAdminView ? 'Return to Dashboard' : 'Return Home'}
           </button>

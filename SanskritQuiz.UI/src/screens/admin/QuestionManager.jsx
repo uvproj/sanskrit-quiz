@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import MediaHelper from '../../helpers/MediaHelper';
+import './AdminCommon.css';
 
 const API = import.meta.env.VITE_API_BASE_URL;
 
@@ -106,28 +107,28 @@ function QuestionForm({ initial, onSave, onCancel, saving }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+    <form onSubmit={handleSubmit} className="question-form">
       {error && (
-        <div style={{ padding: '0.75rem 1rem', background: '#fef2f2', color: '#b91c1c', borderRadius: '8px' }}>
+        <div className="error-message">
           {error}
         </div>
       )}
 
-      <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-        <div style={{ flex: 1 }}>
-          <label style={labelStyle}>{type === 'Picture' ? 'Question Text (Optional)' : 'Question Text'}</label>
+      <div className="admin-form-inline">
+        <div className="admin-input-group">
+          <label className="admin-label">{type === 'Picture' ? 'Question Text (Optional)' : 'Question Text'}</label>
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
             rows={2}
             required={type === 'Word'}
             placeholder="Enter the question text..."
-            style={inputStyle}
+            className="admin-input"
           />
         </div>
         <div style={{ minWidth: '140px' }}>
-          <label style={labelStyle}>Type</label>
-          <select value={type} onChange={(e) => setType(e.target.value)} style={inputStyle}>
+          <label className="admin-label">Type</label>
+          <select value={type} onChange={(e) => setType(e.target.value)} className="admin-input">
             <option value="Word">Word</option>
             <option value="Picture">Picture</option>
           </select>
@@ -135,9 +136,9 @@ function QuestionForm({ initial, onSave, onCancel, saving }) {
       </div>
 
       {type === 'Picture' && (
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', background: '#f8fafc', padding: '1rem', borderRadius: '8px', border: '1px dashed #cbd5e1' }}>
+        <div className="image-preview-container">
           <div style={{ flex: 1 }}>
-            <label style={labelStyle}>Question Image</label>
+            <label className="admin-label">Question Image</label>
             <input type="file" accept="image/*" onChange={handleFileChange} style={{ fontSize: '0.875rem' }} />
           </div>
           {(previewUrl || mediaUrl) && (
@@ -145,9 +146,9 @@ function QuestionForm({ initial, onSave, onCancel, saving }) {
               <img
                 src={previewUrl || MediaHelper.resolveMedia(mediaUrl)}
                 alt="Preview"
-                style={{ height: '80px', width: '80px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #e2e8f0' }}
+                className="image-preview"
               />
-              <div style={{ position: 'absolute', top: -8, right: -8, background: '#4f46e5', color: 'white', fontSize: '10px', padding: '2px 6px', borderRadius: '10px' }}>
+              <div style={{ position: 'absolute', top: -8, right: -8, background: 'var(--admin-primary)', color: 'white', fontSize: '10px', padding: '2px 6px', borderRadius: '10px' }}>
                 Preview
               </div>
             </div>
@@ -156,10 +157,10 @@ function QuestionForm({ initial, onSave, onCancel, saving }) {
       )}
 
       <div>
-        <label style={labelStyle}>Choices (pick the correct one)</label>
+        <label className="admin-label">Choices (pick the correct one)</label>
         {options.map((opt, i) => (
-          <div key={i} style={{ marginBottom: '1rem', padding: '0.75rem', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div key={i} className="choice-item">
+            <div className="choice-row">
               <input
                 type="radio"
                 name={`correct-${initial?.id ?? 'new'}`}
@@ -175,12 +176,14 @@ function QuestionForm({ initial, onSave, onCancel, saving }) {
                     onChange={(e) => handleOptionChange(i, e.target.value)}
                     required={opt.type === 'Word'}
                     placeholder={`Choice ${i + 1} text...`}
-                    style={{ ...inputStyle, marginBottom: 0, flex: 1 }}
+                    className="admin-input"
+                    style={{ flex: 1 }}
                   />
                   <select
                     value={opt.type}
                     onChange={(e) => handleOptionTypeChange(i, e.target.value)}
-                    style={{ ...inputStyle, width: '100px', marginBottom: 0 }}
+                    className="admin-input"
+                    style={{ width: '120px' }}
                   >
                     <option value="Word">Word</option>
                     <option value="Picture">Picture</option>
@@ -193,7 +196,8 @@ function QuestionForm({ initial, onSave, onCancel, saving }) {
                       <img
                         src={opt.previewUrl || MediaHelper.resolveMedia(opt.mediaUrl)}
                         alt="Preview"
-                        style={{ height: '40px', width: '40px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #e2e8f0' }}
+                        className="image-preview"
+                        style={{ height: '40px', width: '40px' }}
                       />
                     )}
                   </div>
@@ -205,8 +209,8 @@ function QuestionForm({ initial, onSave, onCancel, saving }) {
       </div>
 
       <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
-        <button type="button" onClick={onCancel} style={cancelBtnStyle}>Cancel</button>
-        <button type="submit" disabled={saving} style={saveBtnStyle(saving)}>
+        <button type="button" onClick={onCancel} className="admin-btn admin-btn-ghost">Cancel</button>
+        <button type="submit" disabled={saving} className="admin-btn admin-btn-primary">
           {saving ? 'Saving…' : 'Save Question'}
         </button>
       </div>
@@ -309,13 +313,16 @@ export default function QuestionManager() {
   };
 
   return (
-    <div style={{ fontFamily: 'Inter, sans-serif' }}>
+    <div className="admin-page-container">
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-        <h1 style={{ fontSize: '1.75rem', color: '#0f172a', margin: 0 }}>Question Management</h1>
+      <div className="admin-header-flex">
+        <div>
+          <h1 className="admin-title">Question Management</h1>
+          <p className="admin-subtitle">Create and edit questions with text or pictures.</p>
+        </div>
         <button
           onClick={() => setEditingId(editingId === 'new' ? null : 'new')}
-          style={saveBtnStyle(false)}
+          className="admin-btn admin-btn-primary"
         >
           {editingId === 'new' ? '✕ Cancel' : '+ Add Question'}
         </button>
@@ -323,14 +330,14 @@ export default function QuestionManager() {
 
       {/* Toast */}
       {toast && (
-        <div style={{ padding: '0.75rem 1rem', background: '#f0fdf4', color: '#166534', borderRadius: '8px', marginBottom: '1rem', border: '1px solid #bbf7d0' }}>
+        <div className="toast-success">
           {toast}
         </div>
       )}
 
       {/* Add Form */}
       {editingId === 'new' && (
-        <div style={formPanelStyle}>
+        <div className="admin-card">
           <h3 style={{ margin: '0 0 1rem', color: '#1e293b' }}>New Question</h3>
           <QuestionForm
             onSave={handleAdd}
@@ -342,50 +349,58 @@ export default function QuestionManager() {
 
       {/* Questions Table */}
       {loading ? (
-        <p style={{ color: '#64748b' }}>Loading questions…</p>
+        <p className="admin-text-muted">Loading questions…</p>
       ) : (
-        <div style={{ background: 'white', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+        <div className="admin-table-wrapper">
+          <table className="admin-table">
             <thead>
-              <tr style={{ background: '#f1f5f9', borderBottom: '2px solid #e2e8f0' }}>
-                <th style={thStyle}>#</th>
-                <th style={thStyle}>Content</th>
-                <th style={thStyle}>Type</th>
-                <th style={thStyle}>Options</th>
-                <th style={thStyle}></th>
-                <th style={thStyle}></th>
+              <tr>
+                <th style={{ width: '50px' }}>#</th>
+                <th>Content</th>
+                <th>Type</th>
+                <th>Options</th>
+                <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {questions.map((q, idx) => (
-                <>
-                  <tr key={q.id} style={{ borderBottom: '1px solid #f1f5f9', background: editingId === q.id ? '#f8faff' : 'white' }}>
-                    <td style={tdStyle}>{idx + 1}</td>
-                    <td style={{ ...tdStyle, maxWidth: '340px', fontWeight: 500 }}>{q.content}</td>
-                    <td style={tdStyle}>
-                      <span style={typeBadge(q.type)}>{q.type}</span>
+                <React.Fragment key={q.id}>
+                  <tr style={{ background: editingId === q.id ? '#f8faff' : 'inherit' }}>
+                    <td>{idx + 1}</td>
+                    <td style={{ maxWidth: '340px', fontWeight: 500 }}>
+                       {q.type === 'Picture' && (
+                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                           <img src={MediaHelper.resolveMedia(q.mediaUrl)} style={{ height: '30px', width: '30px', objectFit: 'cover', borderRadius: '4px' }} alt="" />
+                         </div>
+                       )}
+                       {q.content}
                     </td>
-                    <td style={tdStyle}>{q.options?.length ?? 0}</td>
-                    <td style={{ ...tdStyle, textAlign: 'right' }}>
-                      <button
-                        onClick={() => setEditingId(editingId === q.id ? null : q.id)}
-                        style={editBtnStyle}
-                      >
-                        {editingId === q.id ? 'Close' : 'Edit'}
-                      </button>
+                    <td>
+                      <span className={`question-type-badge ${q.type.toLowerCase()}`}>{q.type}</span>
                     </td>
-                    <td style={{ ...tdStyle, textAlign: 'right' }}>
-                      <button
-                        onClick={() => handleDelete(q.id)}
-                        style={deleteBtnStyle}
-                      >
-                        Delete
-                      </button>
+                    <td>{q.options?.length ?? 0}</td>
+                    <td style={{ textAlign: 'right' }}>
+                      <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                        <button
+                          onClick={() => setEditingId(editingId === q.id ? null : q.id)}
+                          className="admin-btn admin-btn-ghost"
+                          style={{ padding: '0.4rem 0.9rem', fontSize: '0.85rem' }}
+                        >
+                          {editingId === q.id ? 'Close' : 'Edit'}
+                        </button>
+                        <button
+                          onClick={() => handleDelete(q.id)}
+                          className="admin-btn admin-btn-danger"
+                          style={{ padding: '0.4rem 0.9rem', fontSize: '0.85rem' }}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                   {editingId === q.id && (
                     <tr key={`edit-${q.id}`}>
-                      <td colSpan={5} style={{ padding: '1.5rem', background: '#f8faff', borderBottom: '2px solid #e0e7ff' }}>
+                      <td colSpan={5} style={{ padding: '1.5rem', background: '#f8faff' }}>
                         <QuestionForm
                           initial={q}
                           onSave={(data) => handleEdit(q.id, data)}
@@ -395,7 +410,7 @@ export default function QuestionManager() {
                       </td>
                     </tr>
                   )}
-                </>
+                </React.Fragment>
               ))}
               {questions.length === 0 && (
                 <tr>
@@ -411,15 +426,3 @@ export default function QuestionManager() {
     </div>
   );
 }
-
-// --- Styles ---
-const labelStyle = { display: 'block', marginBottom: '0.4rem', fontWeight: 600, color: '#475569', fontSize: '0.875rem' };
-const inputStyle = { width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none', fontSize: '0.95rem', fontFamily: 'inherit', boxSizing: 'border-box' };
-const thStyle = { padding: '0.85rem 1rem', color: '#475569', fontWeight: 600, fontSize: '0.875rem' };
-const tdStyle = { padding: '0.85rem 1rem', color: '#334155', fontSize: '0.95rem' };
-const editBtnStyle = { padding: '0.4rem 0.9rem', background: '#e0e7ff', color: '#4f46e5', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' };
-const cancelBtnStyle = { padding: '0.6rem 1.2rem', background: '#f1f5f9', color: '#475569', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 };
-const saveBtnStyle = (disabled) => ({ padding: '0.6rem 1.4rem', background: disabled ? '#94a3b8' : '#4f46e5', color: 'white', border: 'none', borderRadius: '8px', cursor: disabled ? 'not-allowed' : 'pointer', fontWeight: 600 });
-const formPanelStyle = { background: 'white', borderRadius: '10px', padding: '1.5rem', marginBottom: '1.5rem', boxShadow: '0 2px 8px rgba(0,0,0,0.07)', border: '2px solid #e0e7ff' };
-const typeBadge = (type) => ({ padding: '0.2rem 0.6rem', borderRadius: '999px', fontSize: '0.78rem', fontWeight: 600, background: type === 'Word' ? '#ede9fe' : '#fef3c7', color: type === 'Word' ? '#6d28d9' : '#92400e' });
-const deleteBtnStyle = { background: '#ef4444', color: 'white', border: 'none', padding: '0.25rem 0.5rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.875rem' };

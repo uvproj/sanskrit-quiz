@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import './AdminCommon.css';
 
 export default function MediaManager() {
   const [mediaFiles, setMediaFiles] = useState([]);
@@ -77,72 +78,70 @@ export default function MediaManager() {
   if (loading) return <div>Loading media...</div>;
 
   return (
-    <div>
-      <h1 style={{ fontSize: '2rem', color: '#0f172a', marginBottom: '1.5rem' }}>Media Manager</h1>
+    <div className="admin-page-container">
+      <h1 className="admin-title">Media Manager</h1>
 
-      <div style={{ background: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', marginBottom: '2rem' }}>
+      <div className="admin-card">
         <h2 style={{ fontSize: '1.25rem', marginTop: 0, marginBottom: '1rem' }}>Upload New Media</h2>
-        <form onSubmit={handleUpload} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end', flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <label style={{ fontSize: '0.875rem', fontWeight: 'bold', color: '#475569' }}>File</label>
+        <form onSubmit={handleUpload} className="admin-form-inline">
+          <div className="admin-input-group">
+            <label className="admin-label">File</label>
             <input
               type="file"
               ref={fileInputRef}
               onChange={(e) => setFile(e.target.files[0])}
               required
-              style={{ padding: '0.5rem', border: '1px solid #cbd5e1', borderRadius: '4px' }}
+              className="admin-input"
             />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1, minWidth: '200px' }}>
-            <label style={{ fontSize: '0.875rem', fontWeight: 'bold', color: '#475569' }}>Tags (comma-separated)</label>
+          <div className="admin-input-group">
+            <label className="admin-label">Tags (comma-separated)</label>
             <input
               type="text"
               value={tags}
               onChange={(e) => setTags(e.target.value)}
               placeholder="e.g. animal, tree, nature"
-              style={{ padding: '0.5rem', border: '1px solid #cbd5e1', borderRadius: '4px', width: '100%' }}
+              className="admin-input"
             />
           </div>
           <button
             type="submit"
             disabled={!file || uploading}
-            style={{
-              background: '#4f46e5', color: 'white', padding: '0.5rem 1.5rem', height: '42px',
-              borderRadius: '8px', border: 'none', fontWeight: 'bold', cursor: (!file || uploading) ? 'not-allowed' : 'pointer',
-              opacity: (!file || uploading) ? 0.7 : 1
-            }}
+            className="admin-btn admin-btn-primary"
+            style={{ height: '42px' }}
           >
             {uploading ? 'Uploading...' : 'Upload'}
           </button>
         </form>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
+      <div className="admin-grid-cards">
         {mediaFiles.map(m => (
-          <div key={m.id} style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <div key={m.id} className="admin-card" style={{ padding: 0, display: 'flex', flexDirection: 'column' }}>
             {m.contentType && m.contentType.startsWith('image/') ? (
               <img
                 src={`${import.meta.env.VITE_API_BASE_URL}/api/media/${m.id}`}
                 alt={m.fileName}
-                style={{ width: '100%', height: '150px', objectFit: 'cover' }}
+                style={{ width: '100%', height: '150px', objectFit: 'cover', borderRadius: '12px 12px 0 0' }}
               />
             ) : (
               <div style={{ height: '150px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', color: '#64748b' }}>
                 {m.contentType}
               </div>
             )}
-            <div style={{ padding: '0.75rem', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div style={{ padding: '1rem', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div>
                 <div style={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#0f172a', marginBottom: '0.25rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={m.fileName}>
                   {m.fileName}
                 </div>
-                <div style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: '0.5rem' }}>
+                <div className="quiz-badge" style={{ fontSize: '0.75rem', display: 'inline-block' }}>
                   Tags: {m.tags || 'none'}
                 </div>
               </div>
               <button
                 onClick={() => handleDelete(m.id)}
-                style={{ background: '#ef4444', color: 'white', border: 'none', padding: '0.25rem 0.5rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.75rem', alignSelf: 'flex-start' }}
+                className="admin-btn admin-btn-danger"
+                style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', alignSelf: 'flex-start', marginTop: '1rem' }}
               >
                 Delete
               </button>
@@ -150,7 +149,7 @@ export default function MediaManager() {
           </div>
         ))}
         {mediaFiles.length === 0 && (
-          <div style={{ color: '#64748b', gridColumn: '1 / -1' }}>No media files uploaded yet.</div>
+          <div className="admin-text-muted" style={{ gridColumn: '1 / -1' }}>No media files uploaded yet.</div>
         )}
       </div>
     </div>

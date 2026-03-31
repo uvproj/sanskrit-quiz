@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './QuizStyles.css';
 
 export default function StartScreen() {
   const navigate = useNavigate();
@@ -45,53 +46,53 @@ export default function StartScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl p-8 space-y-6">
-        <h2 className="text-3xl font-bold text-gray-800 text-center">Quiz Setup</h2>
+    <div className="quiz-container bg-gradient">
+      <div className="card start-screen-card animate-fade-in">
+        <h2 className="text-3xl-bold text-center">Quiz Setup</h2>
 
-        <form onSubmit={handleStart} className="space-y-5">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+        <form onSubmit={handleStart} className="setup-form">
+          <div className="form-group">
+            <label className="form-label">Your Name</label>
             <input
               type="text"
               required
               value={name}
               onChange={e => setName(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+              className="form-input"
               placeholder="Enter your name"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Review Mode</label>
+          <div className="form-group">
+            <label className="form-label">Review Mode</label>
             <select
               value={reviewMode}
               onChange={e => setReviewMode(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-white"
+              className="form-select"
             >
               <option value="immediate">Review Answers Immediately</option>
               <option value="end">Review Answers at the End</option>
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Quiz Type</label>
+          <div className="form-group">
+            <label className="form-label">Quiz Type</label>
             <select
               value={quizType}
               onChange={e => setQuizType(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-white"
+              className="form-select"
             >
               <option value="">--All--</option>
               <option value="vocabulary">Vocabulary Words</option>
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Number of Questions</label>
+          <div className="form-group">
+            <label className="form-label">Number of Questions</label>
             <select
               value={questionsCount}
               onChange={e => setQuestionsCount(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-white"
+              className="form-select"
             >
               <option value={2}>2 Questions</option>
               <option value={10}>10 Questions</option>
@@ -105,7 +106,8 @@ export default function StartScreen() {
           <button
             type="submit"
             disabled={loading || !name.trim()}
-            className="w-full py-4 mt-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white rounded-xl font-bold text-lg transition-all transform hover:scale-[1.02] shadow-md"
+            className="btn-start"
+            style={{ marginTop: '1.5rem' }}
           >
             {loading ? 'Setting up...' : 'Begin Quiz'}
           </button>
