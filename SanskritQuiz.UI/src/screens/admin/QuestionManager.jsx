@@ -289,6 +289,25 @@ export default function QuestionManager() {
     }
   };
 
+  const handleDelete = async (questionId) => {
+    if (!window.confirm('Delete this question?')) return;
+
+    try {
+      const res = await fetch(`${API}/api/question/${questionId}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        showToast('Question deleted ✓');
+        loadQuestions();
+      } else {
+        alert('Delete failed');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Delete failed');
+    }
+  };
+
   return (
     <div style={{ fontFamily: 'Inter, sans-serif' }}>
       {/* Header */}
@@ -334,6 +353,7 @@ export default function QuestionManager() {
                 <th style={thStyle}>Type</th>
                 <th style={thStyle}>Options</th>
                 <th style={thStyle}></th>
+                <th style={thStyle}></th>
               </tr>
             </thead>
             <tbody>
@@ -352,6 +372,14 @@ export default function QuestionManager() {
                         style={editBtnStyle}
                       >
                         {editingId === q.id ? 'Close' : 'Edit'}
+                      </button>
+                    </td>
+                    <td style={{ ...tdStyle, textAlign: 'right' }}>
+                      <button
+                        onClick={() => handleDelete(q.id)}
+                        style={deleteBtnStyle}
+                      >
+                        Delete
                       </button>
                     </td>
                   </tr>
@@ -394,3 +422,4 @@ const cancelBtnStyle = { padding: '0.6rem 1.2rem', background: '#f1f5f9', color:
 const saveBtnStyle = (disabled) => ({ padding: '0.6rem 1.4rem', background: disabled ? '#94a3b8' : '#4f46e5', color: 'white', border: 'none', borderRadius: '8px', cursor: disabled ? 'not-allowed' : 'pointer', fontWeight: 600 });
 const formPanelStyle = { background: 'white', borderRadius: '10px', padding: '1.5rem', marginBottom: '1.5rem', boxShadow: '0 2px 8px rgba(0,0,0,0.07)', border: '2px solid #e0e7ff' };
 const typeBadge = (type) => ({ padding: '0.2rem 0.6rem', borderRadius: '999px', fontSize: '0.78rem', fontWeight: 600, background: type === 'Word' ? '#ede9fe' : '#fef3c7', color: type === 'Word' ? '#6d28d9' : '#92400e' });
+const deleteBtnStyle = { background: '#ef4444', color: 'white', border: 'none', padding: '0.25rem 0.5rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.875rem' };

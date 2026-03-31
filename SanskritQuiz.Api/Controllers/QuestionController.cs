@@ -94,5 +94,19 @@ namespace SanskritQuiz.Api.Controllers
             return Ok(question);
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteQuestion(int id)
+        {
+            var question = await _context.Questions.FindAsync(id);
+            if (question == null)
+            {
+                return NotFound();
+            }
+
+            _context.Questions.Remove(question);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }
